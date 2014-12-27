@@ -1,0 +1,17 @@
+/* CSS for Lin3s */
+
+#div-1 {
+ position:relative;
+}
+#div-canvas2d {
+ position:absolute;
+ top:0;
+ left:20%;
+ width:200px;
+}
+#div-viewer3d {
+ position:absolute;
+ top:0;
+ left:60%;
+ width:200px;
+}

@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>
+      Lin3s
+    </title>
+    <link href="lin3s.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="div-1">
+      <div id="div-canvas2d">
+        <canvas id='canvas1' width='100px' height='100px'>
+              Your browser does not support HTML5 Canvas.
+        </canvas>
+      </div>
+      <div id="div-viewer3d">
+      </div>
+    </div>
+  </body>
+  <script>
+    var canvas = document.getElementById("canvas1");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#FF0000";
+    ctx.fillRect(0, 0, 80, 80);
+    
+  </script>
+	<script type="text/javascript" src="3dviewer/three.min.js"></script>
+	<script type="text/javascript" src="3dviewer/OrbitControls.js"></script>
+	<script type="text/javascript" src="3dviewer/3dviewer.js"></script>
+</html>
