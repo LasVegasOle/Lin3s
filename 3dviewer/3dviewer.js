@@ -24,7 +24,7 @@ inicio();
 animacion();
 
 function inicio() {
-	Render.setSize(500,400);
+	Render.setSize(400,600);
 	document.getElementById('div-viewer3d').appendChild(Render.domElement);
 	Camera.position.z = 100;
 	Escenario.add(Camera);

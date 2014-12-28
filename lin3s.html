@@ -1,3 +1,5 @@
+<!-- desde cmd y en la carpeta del proyecto, python -m SimpleHTTPServer 
+	 en Chrome-> localhost 8000 -->
 <html>
   <head>
     <title>
@@ -8,22 +10,64 @@
   <body>
     <div id="div-1">
       <div id="div-canvas2d">
-        <canvas id='canvas1' width='100px' height='100px'>
+        <canvas id='editor-canvas' resize>
               Your browser does not support HTML5 Canvas.
         </canvas>
       </div>
       <div id="div-viewer3d">
       </div>
     </div>
+    <div id="parameters">
+      <h2>Lin3s</h2>
+      <h2>Params</h2>
+      <p>
+        <label class="field" for="layer_height">Layer height [<em>mm</em>]:</label>
+        <input id="layer_height" type ="input" value="1.2"/>
+      </p>
+      <p>
+        <label class="field" for="num_layers"># layers:</label>
+        <input id="num_layers" type ="input" value="1"/>
+      </p>
+      <p>
+        <label class="field" for="first_height">1st layer height [<em>mm</em>]:</label>
+        <input id="first_height" type ="input" value="0.5"/>
+      </p>
+      <p>
+        <label class="field" for="rotation">Rotation [<em>deg/layer</em>]:</label>
+        <input id="rotation" type ="input" value="0"/>
+      </p>
+      <p>
+        <label class="field" for="scale">Scale top layer [<em>%</em>]:</label>
+        <input id="scale" type ="input" value="100"/>
+      </p>
+      <p>
+        <label class="field" for="feedrate">Feedrate [<em>mm/min</em>]:</label>
+        <input id="feedrate" type ="input" value="6000"/>
+      </p>
+      <p>
+        <label class="field" for="delay">Initial delay [<em>ms</em>]:</label>
+        <input id="delay" type ="input" value="300"/>
+      </p>
+      <p>
+        <label class="field" for="center_x">center x [<em>mm</em>]:</label>
+        <input id="center_x" type ="input" value="0"/>
+      </p>
+      <p>
+        <label class="field" for="center_y">center y [<em>mm</em>]:</label>
+        <input id="center_y" type ="input" value="0"/>
+      </p>
+      <p>
+        <label class="field" for="name">File name:</label>
+        <input id="name" type ="input" value="Rose"/>
+      </p>
+      <h2 id="help_me">Help me</h2>
+      <h2 id="tha_gcode">GCode</h2>
+    </div>
   </body>
-  <script>
-    var canvas = document.getElementById("canvas1");
-    var ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#FF0000";
-    ctx.fillRect(0, 0, 80, 80);
-    
-  </script>
-	<script type="text/javascript" src="3dviewer/three.min.js"></script>
-	<script type="text/javascript" src="3dviewer/OrbitControls.js"></script>
-	<script type="text/javascript" src="3dviewer/3dviewer.js"></script>
+  <script type="text/javascript" src="logic/logic.js"></script>
+  <script type="text/javascript" src="3dviewer/three.min.js"></script>
+  <script type="text/javascript" src="3dviewer/OrbitControls.js"></script>
+  <script type="text/javascript" src="3dviewer/3dviewer.js"></script>
+  <script type="text/javascript" src="line-editor/paper-full.js"></script>
+  <script type="text/paperscript" src="line-editor/line-editor.js" canvas="editor-canvas"></script>
 </html>
