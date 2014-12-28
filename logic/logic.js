@@ -1,7 +1,9 @@
 console.log("Loading logic.js");
 
 window.array_line_2d = [];
-var array_line_3d = [];
+var array_line_3d = [[2,7,0],[7,2,0],[12,7,0],[12,17,0],[7,12,0],[2,17,0],
+                     [2,7,0], [2,7,2],[7,2,2],[12,7,2],[12,17,2],[7,12,2],[2,17,2],
+                     [2,7,2]];
 
 /*document.getElementById("tha_gcode").addEventListener("click", function(){
     alert(window.array_line_2d);
@@ -32,6 +34,7 @@ function array_2d_to_3d() {
     }
   }
   console.log(array_line_3d);
+  draw_shape_into_3dviewer();
 }
 
 function rotate_point (x, y, layerRotation) {
