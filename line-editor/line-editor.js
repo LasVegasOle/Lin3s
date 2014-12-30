@@ -64,6 +64,8 @@ function onMouseUp(event) {
 	path.fullySelected = false;
 	path.strokeColor = '#0099FF';
   build_line_array();
+  //window.array_2d_to_3d();
+  globals.call_array_2d_to_3d();
 }
 
 function onMouseDrag(event) {
@@ -74,7 +76,7 @@ function onMouseDrag(event) {
 // @brief builds up de line array
 function build_line_array(){
 	var trajectory = path.segments;
-  window.array_line_2d = [];
+  globals.array_line_2d = [];
 	// Vars for interations (for loops)
 	var i=0, x=0, y=0;
 	// Calculate x,y max and min values
@@ -98,16 +100,16 @@ function build_line_array(){
 	var yOffset = yMin + ( yMax - yMin ) / 2;
 	for (i = 0; i != trajectory.length; i ++) {
 		// Converting from pixels to mm, centering the gcode to origin (0,0) AND rounding to 2 digits
-		window.array_line_2d.push([(Math.round(100 * ( trajectory[i].point.x - xOffset)) / 100),
-                               (Math.round(100 * ( trajectory[i].point.y - yOffset)) / 100)]
-                              );
+		globals.array_line_2d.push([(Math.round(100 * ( trajectory[i].point.x - xOffset)) / 100),
+                                (Math.round(100 * ( trajectory[i].point.y - yOffset)) / 100)]
+                               );
 	}
 	// If the path is closed, close the drawing adding the closing edge
 	if (path.closed) {
 		// Converting from pixels to mm, centering the gcode to origin (0,0) AND rounding to 2 digits
-		window.array_line_2d  .push([(Math.round(100 * ( path.firstSegment.point.x - xOffset)) / 100),
-                               (Math.round(100 * ( path.firstSegment.point.y - yOffset)) / 100)]
-                              );
+		globals.array_line_2d.push([(Math.round(100 * ( path.firstSegment.point.x - xOffset)) / 100),
+                                (Math.round(100 * ( path.firstSegment.point.y - yOffset)) / 100)]
+                               );
 	}
   //alert(array);
 }

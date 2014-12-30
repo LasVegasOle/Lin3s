@@ -1,9 +1,24 @@
 console.log("Loading logic.js");
+// Global variables shared with paperscript
+window.globals = {
+    array_line_2d: [],
+    call_array_2d_to_3d: function() { array_2d_to_3d(); }
+};
 
-window.array_line_2d = [];
-var array_line_3d = [[2,7,0],[7,2,0],[12,7,0],[12,17,0],[7,12,0],[2,17,0],
-                     [2,7,0], [2,7,2],[7,2,2],[12,7,2],[12,17,2],[7,12,2],[2,17,2],
-                     [2,7,2]];
+// Handling events
+// Parameters Events handler
+document.getElementById('parameters').addEventListener('change', eventChangeHandler);
+
+function eventChangeHandler(e) {
+	if (e.target !== e.currentTarget) {
+	
+		var item = e.target.id;
+		//if(item == "layers")
+			//updateZCamera(document.getElementById("layers").value);
+    array_2d_to_3d();  
+	}
+    e.stopPropagation();
+} 
 
 /*document.getElementById("tha_gcode").addEventListener("click", function(){
     alert(window.array_line_2d);
@@ -13,6 +28,17 @@ document.getElementById("help_me").addEventListener("click", function(){
     alert("Help me!");
 });*/
 
+// TODO: Para dibujar bien, tengo que diferenciar entre tramos de linia.
+// o linia continua, porque sino el viewer no sabe
+// nueva estructura de datos
+// Array de 3dimensiones.
+// primera dimension linias de la figura,
+// segunda dimension puntos de la linia
+// tercera dimension coordenadas de los puntos
+// array_line_3d[layer][node][coordinates]
+
+var array_line_3d = [];
+
 // From 2d array to 3d array for 3d Viewer and Gcode generation
 
 function array_2d_to_3d() {
@@ -21,16 +47,22 @@ function array_2d_to_3d() {
   // Fill 3d array with a #n 2d layers
     // Scale each layer depending on scale value
       // Rotate layer points depending on rotation
+      
+  // Reset 3d line array
+  array_line_3d = [];
   var num_of_layers = document.getElementById("num_layers").value;
   var x, y;
   // Loop for the total amount of layers
   for (var i = 0; i < num_of_layers; i++) {
+    array_line_3d[i] = [];  // Adding layer info
     // Loop over the line #number of nodes
-    for (var j=0; j < window.array_line_2d.length; j++) {
+    for (var j=0; j < globals.array_line_2d.length; j++) {
+      //array_line_3d[i][j] = []; // Adding node info
       //console.log("# of node line" + window.array_line_2d.length);
-      x = window.array_line_2d[j][0];
-      y = window.array_line_2d[j][1];
-      array_line_3d.push([x, y, i]);
+      x = globals.array_line_2d[j][0];
+      y = globals.array_line_2d[j][1];
+      //array_line_3d.push([x, y, i]);
+      array_line_3d[i].push([x, y, i]); // Adding coordinates info
     }
   }
   console.log(array_line_3d);
