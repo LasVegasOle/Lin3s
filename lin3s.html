@@ -25,20 +25,24 @@
         <input id="layer_height" type ="input" value="1.2"/>
       </p>
       <p>
-        <label class="field" for="num_layers"># layers:</label>
-        <input id="num_layers" type ="input" value="20"/>
+        <label class="field" for="num_of_layers"># layers:</label>
+        <input id="num_of_layers" type ="input" value="1"/>
       </p>
       <p>
         <label class="field" for="first_height">1st layer height [<em>mm</em>]:</label>
         <input id="first_height" type ="input" value="0.5"/>
       </p>
       <p>
-        <label class="field" for="rotation">Rotation [<em>deg/layer</em>]:</label>
-        <input id="rotation" type ="input" value="0"/>
+        <label class="field" for="delta_x">Delta X [<em>mm</em>]:</label>
+        <input id="delta_x" type ="input" value="100"/>
+      </p>    
+      <p>
+        <label class="field" for="layer_rotation">Rotation [<em>deg/layer</em>]:</label>
+        <input id="layer_rotation" type ="input" value="0"/>
       </p>
       <p>
-        <label class="field" for="scale">Scale top layer [<em>%</em>]:</label>
-        <input id="scale" type ="input" value="100"/>
+        <label class="field" for="top_layer_scale">Scale top layer [<em>%</em>]:</label>
+        <input id="top_layer_scale" type ="input" value="100"/>
       </p>
       <p>
         <label class="field" for="feedrate">Feedrate [<em>mm/min</em>]:</label>
@@ -63,6 +67,7 @@
       <h2 id="help_me">Help me</h2>
       <h2 id="tha_gcode">GCode</h2>
     </div>
+    <div class="vertical-line"/>
   </body>
   <script type="text/javascript" src="logic/logic.js"></script>
   <script type="text/javascript" src="3dviewer/three.min.js"></script>
@@ -70,4 +75,6 @@
   <script type="text/javascript" src="3dviewer/3dviewer.js"></script>
   <script type="text/javascript" src="line-editor/paper-full.js"></script>
   <script type="text/paperscript" src="line-editor/line-editor.js" canvas="editor-canvas"></script>
+  <script type="text/javascript" src="gcode-writer/FileSaver.js"></script>
+  <script type="text/javascript" src="gcode-writer/gcode-writer.js"></script>
 </html>

@@ -80,36 +80,53 @@ function build_line_array(){
 	// Vars for interations (for loops)
 	var i=0, x=0, y=0;
 	// Calculate x,y max and min values
-	var xMax = 0, yMax = 0, xMin = 1000, yMin = 1000; 
+	var xMax = 0, yMax = 0, xMin = 1000, yMin = 1000, max = 0; 
 	for (i = 0; i < trajectory.length; i++){
 		x = trajectory[i].point.x;
 		y = trajectory[i].point.y;
+    // console.log("x = " + x + ", y = " + y);
 		if (xMin > x) {
 			xMin = x;
-    }	else if (xMax < x) {
+    }	
+    if (xMax < x) {
 			xMax = x;
     }
 		if (yMin > y) {
 			yMin = y;
-    } else if (yMax < y) {
+    }
+    if (yMax < y) {
 			yMax = y;
     }
-	}	
-	// Getting offset for centering the array
-	var xOffset = xMin + ( xMax - xMin ) / 2;  // Values in px
-	var yOffset = yMin + ( yMax - yMin ) / 2;
+	}
+  // console.log("last x = " + x + ", xMax = " + xMax + ", xMin = " + xMin);
+  // console.log("last y = " + y + ", yMax = " + yMax + ", yMin = " + yMin);
+  
+	// Getting offset for centring the array starting from 0,0 for min values
+	var xOffset = xMin + (xMax - xMin)/2;  // Values in px
+	var yOffset = yMin + (yMax - yMin)/2;
+  // console.log("xOffset = " + xOffset + ", yOffset = " + yOffset);
+  var xMaxCentered = xMax - xMin;  // Shifting max values
+  var yMaxCentered = yMax - yMin;
+    // Max value
+  max = (xMaxCentered > yMaxCentered) ? xMaxCentered : yMaxCentered;
+  // console.log("max = " + max);
+  
 	for (i = 0; i != trajectory.length; i ++) {
-		// Converting from pixels to mm, centering the gcode to origin (0,0) AND rounding to 2 digits
-		globals.array_line_2d.push([(Math.round(100 * ( trajectory[i].point.x - xOffset)) / 100),
-                                (Math.round(100 * ( trajectory[i].point.y - yOffset)) / 100)]
-                               );
+		// Centring the gcode to origin (0,0) AND rounding to 4 digits
+    // Convert pixels to values scale from 0(min) to a 100(max))
+    x = (Math.round(10000 * (100*(trajectory[i].point.x - xOffset) / max)) / 10000);
+    y = (Math.round(10000 * (100*(trajectory[i].point.y - yOffset) / max)) / 10000);
+    // console.log("Scale x = " + x + "; Scale y = " + y);
+    y = - y;  // Inverting y axis due to coordinates orientation for paperjs and three js are different
+		globals.array_line_2d.push([x, y]);
 	}
 	// If the path is closed, close the drawing adding the closing edge
 	if (path.closed) {
-		// Converting from pixels to mm, centering the gcode to origin (0,0) AND rounding to 2 digits
-		globals.array_line_2d.push([(Math.round(100 * ( path.firstSegment.point.x - xOffset)) / 100),
-                                (Math.round(100 * ( path.firstSegment.point.y - yOffset)) / 100)]
-                               );
+		// Converting from pixels to mm, centring the gcode to origin (0,0) AND rounding to 4 digits
+    x = (Math.round(10000 * ( 100*(path.firstSegment.point.x - xOffset) / max)) / 10000);
+    y = (Math.round(10000 * ( 100*(path.firstSegment.point.y - yOffset) / max)) / 10000);
+    y = - y;  // Inverting y axis due to coordinates orientation for paperjs and three js are different
+		globals.array_line_2d.push([x, y]);
 	}
   //alert(array);
 }

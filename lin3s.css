@@ -49,3 +49,20 @@ text-shadow: -5px 5px 0px #00e6e6,
              -10px 10px 0px #01cccc,
              -15px 15px 0px #00bdbd;
 }
+
+div.vertical-line{
+  position:absolute;
+  top:14%;
+  left:65%;
+  width: 8px; /* Line width */
+  background-color: #AAFFFF; /* Line color */
+  height: 60%; /* Override in-line if you want specific height. */
+  float: right; /* Causes the line to float to left of content. 
+    You can instead use position:absolute or display:inline-block
+    if this fits better with your design */
+  z-index: 4;
+  box-shadow: -5px 5px 0px #00e6e6,
+             -10px 10px 0px #01cccc,
+             -15px 15px 0px #00bdbd;
+  /* height: 600px; */
+}
