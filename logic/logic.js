@@ -12,6 +12,8 @@ var parameters = {
   layer_rotation: 0,
   top_layer_scale: 0,
   extrusion_radius: 0,  // This parameters is for ThreeJS Cyilinders radius
+  center_x: 0,
+  center_y: 0,
   'update': function() {
     this.layer_height = parseFloat(document.getElementById("layer_height").value);
     this.num_of_layers = parseFloat(document.getElementById("num_of_layers").value);
@@ -20,6 +22,8 @@ var parameters = {
     this.layer_rotation = parseFloat(document.getElementById("layer_rotation").value);
     this.top_layer_scale = parseFloat(document.getElementById("top_layer_scale").value);
     this.extrusion_radius = this.layer_height/2;
+    this.center_x = parseFloat(document.getElementById("center_x").value);
+    this.center_y = parseFloat(document.getElementById("center_y").value);
   }
 }
 
@@ -67,6 +71,8 @@ function array_2d_to_3d() {
   }
   // console.log(array_line_3d);
   draw_shape_into_3dviewer();
+  // Center array after drawing to avoid messing drawing location
+  center_array_line_3d();
 }
 
 function rotate_point(x, y, layer_index) {
@@ -92,4 +98,23 @@ function scale_layer(layer_index) {
 	}
 	else
 		return 1;
+}
+
+// @brief Center array_line_3d this is to adapt to different printer with different center print
+// area location
+function center_array_line_3d() {
+  // Find minimum x and y values
+  // Loop for the total amount of layers
+  for (var layer_index = 0; layer_index < parameters.num_of_layers; layer_index++) {
+    // Loop over the line #number of nodes
+    for (var point_index=0; point_index < globals.array_line_2d.length; point_index++) {
+      // Moving print center and rounding values, 3decimals
+      array_line_3d[layer_index][point_index][0] = Math.round(1000 * 
+                                                   (array_line_3d[layer_index][point_index][0] + parameters.center_x))
+                                                   / 1000;
+      array_line_3d[layer_index][point_index][1] = Math.round(1000 * 
+                                                   (array_line_3d[layer_index][point_index][1] + parameters.center_y))
+                                                   / 1000;
+    }
+  }
 }

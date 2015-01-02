@@ -41,13 +41,27 @@ label.field {
 	float: left;
 }
 h2 {
-color: #AAFFFF;
+  color: rgba(160,255,255, 1);
+  font-family: Tahoma, sans-serif;
+  line-height: 1em;
+  font-size: 55px;
+  text-shadow: -5px 5px 0px #00e6e6,
+               -10px 10px 0px #01cccc,
+               -15px 15px 0px #00bdbd;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+h2:active {
+color: rgba(160,255,255, 0);
 font-family: Tahoma, sans-serif;
 line-height: 1em;
 font-size: 55px;
-text-shadow: -5px 5px 0px #00e6e6,
-             -10px 10px 0px #01cccc,
-             -15px 15px 0px #00bdbd;
+text-shadow: -15px 15px 0px #ff7777;
 }
 
 div.vertical-line{
