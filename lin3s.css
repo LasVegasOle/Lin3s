@@ -44,7 +44,7 @@ h2 {
   color: rgba(160,255,255, 1);
   font-family: Tahoma, sans-serif;
   line-height: 1em;
-  font-size: 55px;
+  font-size: 62px;
   text-shadow: -5px 5px 0px #00e6e6,
                -10px 10px 0px #01cccc,
                -15px 15px 0px #00bdbd;
@@ -54,13 +54,21 @@ h2 {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  margin-top: 10%; 
+  margin-bottom: 0;
+}
+#title_h2 {
+  font-size:95px;
+  color: rgba(255,10,10, 0.5);
+  text-shadow: -5px 5px 0px #FFe6e6,
+             -10px 10px 0px #FFcccc,
+             -15px 15px 0px #FFbdbd;
 }
 
 h2:active {
 color: rgba(160,255,255, 0);
 font-family: Tahoma, sans-serif;
 line-height: 1em;
-font-size: 55px;
 text-shadow: -15px 15px 0px #ff7777;
 }
 

@@ -39,14 +39,7 @@ function onMouseDown(event) {
 			hitResult.segment.remove();
 		};
 		return;
-	}
-	
-	// Close path whenever clicking on the first segment
-	if( hitResult.point == path.firstSegment.point && path.closed == false ){
-		path.closed = true;
-		return;
-	}
-	
+	}	
 	if (hitResult) {
 		// Segment hit
 		if (hitResult.type == 'segment') {
@@ -56,15 +49,28 @@ function onMouseDown(event) {
 			var location = hitResult.location;
 			segment = path.insert(location.index + 1, event.point);
 		}
+	}	
+}
+
+function onKeyDown(event) {
+	// Close path whenever shift + c combination happens
+	if (event.modifiers.shift && event.key=='c' && path.closed == false){
+    path.closed = true;
+    build_line_array();
+    globals.call_array_2d_to_3d();
 	}
-	
+  // Close path whenever shift + o combination happens
+	if (event.modifiers.shift && event.key=='o' && path.closed == true){
+    path.closed = false;
+    build_line_array();
+    globals.call_array_2d_to_3d();
+	}
 }
 
 function onMouseUp(event) {
 	path.fullySelected = false;
 	path.strokeColor = '#0099FF';
   build_line_array();
-  //window.array_2d_to_3d();
   globals.call_array_2d_to_3d();
 }
 
