@@ -14,6 +14,7 @@ var parameters = {
   extrusion_radius: 0,  // This parameters is for ThreeJS Cyilinders radius
   center_x: 0,
   center_y: 0,
+  continuous_path: true,
   'update': function() {
     this.layer_height = parseFloat(document.getElementById("layer_height").value);
     this.num_of_layers = parseFloat(document.getElementById("num_of_layers").value);
@@ -49,11 +50,28 @@ function array_2d_to_3d() {
   // Reset 3d line array
   array_line_3d = [];
   var x, y, z;
+  var direction = true; // used to invert the order of points on a layer
+                         // this is useful for a path that changes directions every layer
+  var point_index = 0;
   // Loop for the total amount of layers
   for (var layer_index = 0; layer_index < parameters.num_of_layers; layer_index++) {
     array_line_3d[layer_index] = [];  // Adding layer info
     // Loop over the line #number of nodes
-    for (var point_index=0; point_index < globals.array_line_2d.length; point_index++) {
+    // Every layer needs to reverse de points order to have a path that returns through that inverts direction
+    // Avoiding jumps
+    // line is printed inverting direction every layer. Used for prints without jumps
+    var start, loop_cond, inc; 
+    if(direction) { 
+        start = 0; 
+        inc = 1; 
+        loop_cond = function(){return point_index < globals.array_line_2d.length}; 
+    } else { 
+        start = globals.array_line_2d.length - 1; 
+        inc = -1; 
+        loop_cond = function(){return point_index >= 0}; 
+    }
+    //console.log("LOGIC: start = " + start + ", direction = " + direction + ", inc = " + inc);
+    for (point_index=start; loop_cond(); point_index += inc) {
       // Scale model to delta_x parameter and round to 3 decimals
       x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.delta_x/100)/1000;
       y = Math.round(1000 * globals.array_line_2d[point_index][1] * parameters.delta_x/100)/1000;
@@ -68,6 +86,11 @@ function array_2d_to_3d() {
       y = rotated_coordinates[1];
       array_line_3d[layer_index].push([x, y, z]); // Adding coordinates info
     }
+    direction = !direction;// Reverse direction
+  }
+  // Convert path to conitnuous path in Z axis too
+  if (parameters.continuous_path) {
+    //continuous_path_calculation();
   }
   // console.log(array_line_3d);
   draw_shape_into_3dviewer();
@@ -115,6 +138,51 @@ function center_array_line_3d() {
       array_line_3d[layer_index][point_index][1] = Math.round(1000 * 
                                                    (array_line_3d[layer_index][point_index][1] + parameters.center_y))
                                                    / 1000;
+    }
+  }
+}
+
+// @brief Increases height point by point instead of layer by layer
+function continuous_path_calculation() {
+  
+  for(var layers_index = 0; layers_index < array_line_3d.length; layers_index++) {
+    // Measure whole layer size
+    var layer_length = 0;
+    // Calculate total layer length
+    for(var points_index = 0; points_index < array_line_3d[layers_index].length - 1; points_index++) {
+      // Calculate distance btw current and next point
+      var current_point = array_line_3d[layers_index][points_index];
+      var target_point = array_line_3d[layers_index][points_index+1];
+      var delta_x = target_point[0] - current_point[0];
+      var delta_y = target_point[1] - current_point[1];
+      var distance = Math.sqrt(Math.pow(delta_x,2)+Math.pow(delta_y,2));
+      layer_length += distance;
+    }
+    // console.log(layer_length);
+    // Measure whole each point displacement
+    var partial_point_layer_length = 0;  
+    for(var points_index = 0; points_index < array_line_3d[layers_index].length - 1; points_index++) {
+      // Calculate distance btw current and next point
+      var current_point = array_line_3d[layers_index][points_index];
+      var target_point = array_line_3d[layers_index][points_index+1];
+      var delta_x = target_point[0] - current_point[0];
+      var delta_y = target_point[1] - current_point[1];
+      var distance = Math.sqrt(Math.pow(delta_x,2)+Math.pow(delta_y,2));
+      partial_point_layer_length += distance;
+      // Make sure first point of each layer (when layer length = 0)
+      // has a starting point of previous non continuous layer height
+      var continuous_z = array_line_3d[layers_index][points_index][2];
+      if (layer_length != 0) {
+        continuous_z = array_line_3d[layers_index][0][2] + // Initial layer height
+                       Math.round(1000 * 
+                                        (partial_point_layer_length/layer_length) 
+                                       * parameters.layer_height
+                                  )/1000;
+      }
+      //console.log("partial_point_layer_length = " + partial_point_layer_length + 
+      //            ", layer_length = " + layer_length + ", parameters.layer_height = " + parameters.layer_height);
+      array_line_3d[layers_index][points_index+1][2] = continuous_z;
+      //console.log("layer length = " + layer_length + ", continuous_z = " + continuous_z);
     }
   }
 }

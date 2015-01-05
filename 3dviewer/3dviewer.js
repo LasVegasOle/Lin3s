@@ -61,15 +61,20 @@ function add_new_shape() {
       var target_point = array_line_3d[i][j+1];
       var delta_x = target_point[0] - current_point[0];
       var delta_y = target_point[1] - current_point[1];
-      var distance = Math.sqrt(Math.pow(delta_x,2)+Math.pow(delta_y,2));
+      var delta_z = target_point[2] - current_point[2];
+      var delta_xy = Math.sqrt(Math.pow(delta_x,2) + Math.pow(delta_y,2));
+      var distance = Math.sqrt(Math.pow(delta_x,2) + Math.pow(delta_y,2) + Math.pow(delta_z,2));
+      var z_rotation = Math.atan2(delta_z, delta_xy);
+      //console.log("target_z = " + target_point[2] + ", current_z = " + current_point[2] + 
+      //", delta_z = " + delta_z + ", delta_xy = " + delta_xy + ", z rotation = " + z_rotation);
       var rotation = Math.atan2(delta_y, delta_x);
       // Build cylinder geometry for each line
       var geometry = new THREE.CylinderGeometry(parameters.extrusion_radius, parameters.extrusion_radius, distance, 5);
       var lin3 = new THREE.Mesh(geometry, material);
       // Positioned and rotated to place properly each line
-      lin3.rotation.z = -Math.PI/2 + rotation;
-      lin3.position.set(current_point[0] + (distance/2) * Math.cos(rotation),
-                            current_point[1] + (distance/2) * Math.sin(rotation),
+      lin3.rotation.set(0, -z_rotation, -Math.PI/2 + rotation);
+      lin3.position.set(current_point[0] + (delta_xy/2) * Math.cos(rotation),
+                            current_point[1] + (delta_xy/2) * Math.sin(rotation),
                             current_point[2]);
       group.add(lin3);
       // Adding a sphere joint for each corner
@@ -89,7 +94,7 @@ function animation() {
 
 function render_model() {
 	controls.update();
-	group.rotation.z += 0.001;
+	//group.rotation.z += 0.001;
 	Render.render(scene, Camera);
 }
 
