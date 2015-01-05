@@ -52,7 +52,7 @@ function add_new_shape() {
 	// http://threejs.org/docs/#Reference/Objects/Line
   // Why lines doesnt react to light
   // http://stackoverflow.com/questions/16308730/three-js-lines-with-different-materials-and-directional-light-intensity
-  var material = new THREE.MeshLambertMaterial({color: 0xffff00});
+  var material = new THREE.MeshLambertMaterial({color: 0x00ff00});
   
   for(var i = 0; i < array_line_3d.length; i++) {
     for(var j = 0; j < array_line_3d[i].length - 1; j++) {
