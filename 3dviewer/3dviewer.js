@@ -32,10 +32,10 @@ function addLights() {
     var dirLight = new THREE.DirectionalLight(0xffffff, 1);
     dirLight.position.set(100, -100, 10);
     scene.add(dirLight);
-    var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-    directionalLight.position.set( 0, 1, 0 );
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(0, 1, 0);
     scene.add( directionalLight );
-    var ambientLight = new THREE.AmbientLight( 0x404040 ); // soft white light
+    var ambientLight = new THREE.AmbientLight(0x404040); // soft white light
     scene.add(ambientLight);
 }
 
@@ -74,15 +74,20 @@ function add_new_shape() {
       // Positioned and rotated to place properly each line
       lin3.rotation.set(0, -z_rotation, -Math.PI/2 + rotation);
       lin3.position.set(current_point[0] + (delta_xy/2) * Math.cos(rotation),
-                            current_point[1] + (delta_xy/2) * Math.sin(rotation),
-                            current_point[2]);
+                        current_point[1] + (delta_xy/2) * Math.sin(rotation),
+                        current_point[2] + (distance/2) * Math.sin(z_rotation));
       group.add(lin3);
       // Adding a sphere joint for each corner
       var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, 5, 5);
       var sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(target_point[0], target_point[1], target_point[2]);
+      sphere.position.set(current_point[0], current_point[1], current_point[2]);
       group.add(sphere);
     }
+    // This sphere is added at the end of the layer line
+    var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, 5, 5);
+    var sphere = new THREE.Mesh(geometry, material);
+    sphere.position.set(target_point[0], target_point[1], target_point[2]);
+    group.add(sphere);
   }
 	scene.add(group);
 }

@@ -1,6 +1,7 @@
 // Global variables shared with paperscript
 window.globals = {
     array_line_2d: [],
+    open_line: true,  
     call_array_2d_to_3d: function() { array_2d_to_3d(); }
 };
 // Object that holds all the user configuration parameters
@@ -70,7 +71,7 @@ function array_2d_to_3d() {
         inc = -1; 
         loop_cond = function(){return point_index >= 0}; 
     }
-    //console.log("LOGIC: start = " + start + ", direction = " + direction + ", inc = " + inc);
+    // console.log("LOGIC: start = " + start + ", direction = " + direction + ", inc = " + inc);
     for (point_index=start; loop_cond(); point_index += inc) {
       // Scale model to delta_x parameter and round to 3 decimals
       x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.delta_x/100)/1000;
@@ -86,11 +87,17 @@ function array_2d_to_3d() {
       y = rotated_coordinates[1];
       array_line_3d[layer_index].push([x, y, z]); // Adding coordinates info
     }
-    direction = !direction;// Reverse direction
+    if(globals.open_line) {
+      direction = !direction;// Reverse direction
+    }
   }
   // Convert path to conitnuous path in Z axis too
-  if (parameters.continuous_path) {
-    //continuous_path_calculation();
+  // If line is not a closed path, do not calculate continuous path
+  // due to to reach same point on a layer, 2 layers need to be walked (1 forward, 1 backwards)
+  // this increases the height distance between this points = 2*layer_height
+  // Possible solution is for none-closed-lines double the amount of layers, and reduce the layer_height to half  
+  if (parameters.continuous_path && !globals.open_line) {
+    continuous_path_calculation();
   }
   // console.log(array_line_3d);
   draw_shape_into_3dviewer();

@@ -56,12 +56,14 @@ function onKeyDown(event) {
 	// Close path whenever shift + c combination happens
 	if (event.modifiers.shift && event.key=='c' && path.closed == false){
     path.closed = true;
+    globals.open_line = false;
     build_line_array();
     globals.call_array_2d_to_3d();
 	}
   // Close path whenever shift + o combination happens
 	if (event.modifiers.shift && event.key=='o' && path.closed == true){
     path.closed = false;
+    globals.open_line = true;
     build_line_array();
     globals.call_array_2d_to_3d();
 	}
