@@ -1,4 +1,5 @@
 console.log("Loading line-editor.js");
+// Todo: To add bezier control to the points study bezierTool PaperJs example
 
 var hitOptions = {
 	segments: true,
@@ -8,31 +9,60 @@ var hitOptions = {
 };
 
 // This path is the one that represents the GCode toolpath
-var path = new Path({
+var path = new Path(  {
 	strokeColor: '#0000FF',
-	strokeWidth: 5,
+	strokeWidth: 3,
 	strokeCap: 'round',
 	strokeJoin: 'round'
 });
 
-var segment;
+var path_to_3d;
+
+var types = ['point', 'handleIn', 'handleOut'];
+var mode; // move, close or add
+var type; // type of segment point handleIn handleOut
+
+var currentSegment;
+
+function findHandle(point) {
+// Recorrer todos los segmentos
+  for (var i = 0, l = path.segments.length; i < l; i++) {
+  // Por cada segmento recorrer los 3 tipos
+    for (var j = 0; j < 3; j++) {
+      var type = types[j]; // Point handle in, handle out
+      var segment = path.segments[i]; // guardar el segmento en que estamos
+      var segmentPoint = type == 'point'
+          ? segment.point
+          : segment.point + segment[type];
+      console.log(segmentPoint);
+      var distance = (point - segmentPoint).length;
+      console.log(distance);
+      if (distance < 3) {
+        return {
+          type: type,
+          segment: segment
+        };
+      }
+    }
+  }
+  return null;
+}
 
 function onMouseDown(event) {
-	segment = null;
-	// Check if there is a collision between the mouse down position and our path
 	var hitResult = project.hitTest(event.point, hitOptions);
-	// If there is no collision then a new path-segment is created
-	if (!hitResult){
-		if(path.closed==false){
-			path.add(event.point);
-			path.fullySelected = true;
-			path.strokeColor = '#e08285';
-			return;
-		}
-	}
-	// Path has been hit
-	path.fullySelected = true;
-	path.strokeColor = '#e08285';
+  // Handlers!!
+  // Permite saber si ya habia un segmento seleccionado y lo deselecciona
+  if (currentSegment)
+      currentSegment.selected = false;
+  mode = type = currentSegment = null;
+
+  var result = findHandle(event.point);
+  // Tenemos result si se ha clicado un punto o handler
+  if (result) {
+    currentSegment = result.segment; // Segmento clicado
+    type = result.type; // tipo de click 
+  }
+  
 	// If shift is hold at the same time a segment is hit, this segment is removed
 	if (event.modifiers.shift) {
 		if (hitResult.type == 'segment') {
@@ -40,16 +70,38 @@ function onMouseDown(event) {
 		};
 		return;
 	}	
+  
+  // Insert segment in the path
 	if (hitResult) {
 		// Segment hit
 		if (hitResult.type == 'segment') {
-			segment = hitResult.segment;
+			currentSegment = hitResult.segment;
 		// Stroke hit insert segment
 		} else if (hitResult.type == 'stroke') {
 			var location = hitResult.location;
-			segment = path.insert(location.index + 1, event.point);
+			currentSegment = path.insert(location.index + 1, event.point);
 		}
-	}	
+	}
+  
+  // Si existe el segmento lo movemos, sino creamos uno
+  mode = currentSegment ? 'move' : 'add';
+  if (!currentSegment)
+    currentSegment = path.add(event.point); // add new point to the path
+  currentSegment.selected = true;
+}
+
+function onMouseDrag(event) {
+  // Si hay que mover y es punto
+  if (!event.modifiers.control && 
+      (mode == 'move' && type == 'point')) {
+      currentSegment.point = event.point;
+    } else {
+      var delta = event.delta.clone();
+      if (type == 'handleOut' || mode == 'add')
+        delta = -delta;
+      currentSegment.handleIn += delta;
+      currentSegment.handleOut -= delta;
+    }
 }
 
 function onKeyDown(event) {
@@ -57,33 +109,32 @@ function onKeyDown(event) {
 	if (event.modifiers.shift && event.key=='c' && path.closed == false){
     path.closed = true;
     globals.open_line = false;
-    build_line_array();
-    globals.call_array_2d_to_3d();
+    update_3d_array();
 	}
   // Close path whenever shift + o combination happens
 	if (event.modifiers.shift && event.key=='o' && path.closed == true){
     path.closed = false;
     globals.open_line = true;
-    build_line_array();
-    globals.call_array_2d_to_3d();
+    update_3d_array();
 	}
 }
 
 function onMouseUp(event) {
-	path.fullySelected = false;
-	path.strokeColor = '#0099FF';
-  build_line_array();
-  globals.call_array_2d_to_3d();
+  update_3d_array();
 }
 
-function onMouseDrag(event) {
-	if (segment)
-		segment.point += event.delta; 
+// @brief This updates the path used on logic.js to convert the 2d shape into 3d 
+function update_3d_array() {
+    path_to_3d = path.clone();
+    path_to_3d.flatten(10);
+    path_to_3d.visible = false;
+    build_line_array();
+    globals.call_array_2d_to_3d();
 }
 
 // @brief builds up de line array
 function build_line_array(){
-	var trajectory = path.segments;
+	var trajectory = path_to_3d.segments;
   globals.array_line_2d = [];
 	// Vars for interations (for loops)
 	var i=0, x=0, y=0;
@@ -136,5 +187,4 @@ function build_line_array(){
     y = - y;  // Inverting y axis due to coordinates orientation for paperjs and three js are different
 		globals.array_line_2d.push([x, y]);
 	}
-  //alert(array);
 }

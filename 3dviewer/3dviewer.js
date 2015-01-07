@@ -1,4 +1,7 @@
 // VARIABLES!!!
+var cylinder_faces = 3;
+var sphere_faces = 3;
+var show_spheres = false;
 //Render dentro de div render
 var Render = new THREE.WebGLRenderer({ alpha: true });
 // scene
@@ -69,7 +72,7 @@ function add_new_shape() {
       //", delta_z = " + delta_z + ", delta_xy = " + delta_xy + ", z rotation = " + z_rotation);
       var rotation = Math.atan2(delta_y, delta_x);
       // Build cylinder geometry for each line
-      var geometry = new THREE.CylinderGeometry(parameters.extrusion_radius, parameters.extrusion_radius, distance, 5);
+      var geometry = new THREE.CylinderGeometry(parameters.extrusion_radius, parameters.extrusion_radius, distance, cylinder_faces);
       var lin3 = new THREE.Mesh(geometry, material);
       // Positioned and rotated to place properly each line
       lin3.rotation.set(0, -z_rotation, -Math.PI/2 + rotation);
@@ -77,19 +80,39 @@ function add_new_shape() {
                         current_point[1] + (delta_xy/2) * Math.sin(rotation),
                         current_point[2] + (distance/2) * Math.sin(z_rotation));
       group.add(lin3);
-      // Adding a sphere joint for each corner
-      var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, 5, 5);
+      if (show_spheres) {
+        // Adding a sphere joint for each corner
+        var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, sphere_faces, sphere_faces);
+        var sphere = new THREE.Mesh(geometry, material);
+        sphere.position.set(current_point[0], current_point[1], current_point[2]);
+        group.add(sphere);
+      }
+    }
+    if(show_spheres) {
+      // This sphere is added at the end of the layer line
+      var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, sphere_faces, sphere_faces);
       var sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(current_point[0], current_point[1], current_point[2]);
+      sphere.position.set(target_point[0], target_point[1], target_point[2]);
       group.add(sphere);
     }
-    // This sphere is added at the end of the layer line
-    var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, 5, 5);
-    var sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(target_point[0], target_point[1], target_point[2]);
-    group.add(sphere);
   }
 	scene.add(group);
+}
+
+function add_new_shape_with_lines() {
+// geometry
+var geometry = new THREE.Geometry();
+geometry.vertices.push( new THREE.Vector3( 0, 5, 0 ) );
+geometry.vertices.push( new THREE.Vector3( 5, -5, -2 ) );
+geometry.vertices.push( new THREE.Vector3( -5, -5, 2 ) );
+geometry.vertices.push( new THREE.Vector3( 0, 5, 0 ) ); // close the loop
+
+// material
+var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
+
+// line
+var line = new THREE.Line( geometry, material );
+scene.add( line );
 }
 
 function animation() {

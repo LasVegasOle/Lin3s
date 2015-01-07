@@ -8,34 +8,32 @@
     <link href="lin3s.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <div id="div-1">
-      <div id="div-canvas2d">
-        <canvas id='editor-canvas' resize>
-              Your browser does not support HTML5 Canvas.
-        </canvas>
-      </div>
-      <div id="div-viewer3d">
-      </div>
-    </div>
-    <div id="parameters">
+  <div id="parameters">
       <h2 id="title_h2">Lin3s</h2>
-      <!--<h2>Params</h2>-->
+      <!-- Design parameters -->
       <p>
-        <label class="field" for="layer_height">Layer height [<em>mm</em>]:</label>
-        <input id="layer_height" type ="input" value="11"/>
+        <label class="field" class="parameters_titles">Design</label>
       </p>
+      <p>
+        <label class="field" for="width_x">Width [<em>mm</em>]:</label>
+        <input id="width_x" type ="input" value="60"/>
+      </p>  
+      <p>
+        <label class="field" for="length_y">Length [<em>mm</em>]:</label>
+        <input id="length_y" type ="input" value="60"/>
+      </p>  
+      <p>
+        <label class="field" for="height_z">Height [<em>mm</em>]:</label>
+        <input id="height_z" type ="input" value="60"/>
+      </p>  
+      <p>
+        <label class="field" for="delta_x">Delta X [<em>mm</em>]:</label>
+        <input id="delta_x" type ="input" value="60"/>
+      </p>  
       <p>
         <label class="field" for="num_of_layers"># layers:</label>
         <input id="num_of_layers" type ="input" value="1"/>
       </p>
-      <p>
-        <label class="field" for="first_height">1st layer height [<em>mm</em>]:</label>
-        <input id="first_height" type ="input" value="0.5"/>
-      </p>
-      <p>
-        <label class="field" for="delta_x">Delta X [<em>mm</em>]:</label>
-        <input id="delta_x" type ="input" value="60"/>
-      </p>    
       <p>
         <label class="field" for="layer_rotation">Rotation [<em>deg/layer</em>]:</label>
         <input id="layer_rotation" type ="input" value="0"/>
@@ -44,6 +42,18 @@
         <label class="field" for="top_layer_scale">Scale top layer [<em>%</em>]:</label>
         <input id="top_layer_scale" type ="input" value="100"/>
       </p>
+      <!-- Printing parameters -->
+      <p>
+        <label class="field" class="parameters_titles">Printing</label>
+      </p>
+      <p>
+        <label class="field" for="layer_height">Layer height [<em>mm</em>]:</label>
+        <input id="layer_height" type ="input" value="1.1"/>
+      </p>
+      <p>
+        <label class="field" for="first_height">1st layer height [<em>mm</em>]:</label>
+        <input id="first_height" type ="input" value="0.5"/>
+      </p>  
       <p>
         <label class="field" for="feedrate">Feedrate [<em>mm/min</em>]:</label>
         <input id="feedrate" type ="input" value="1500"/>
@@ -67,7 +77,13 @@
       <!--<h2 id="help_me">Help me</h2>-->
       <h2 id="tha_gcode">GCode</h2>
     </div>
-    <div class="vertical-line"/>
+    <div id="div-canvas2d">
+      <canvas id='editor-canvas' width="450" height="600">
+            Your browser does not support HTML5 Canvas.
+      </canvas>
+    </div>
+    <div id="div-viewer3d">
+    </div>
   </body>
   <script type="text/javascript" src="logic/logic.js"></script>
   <script type="text/javascript" src="3dviewer/three.min.js"></script>

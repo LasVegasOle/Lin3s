@@ -1,27 +1,30 @@
 /* CSS for Lin3s */
 
-#div-1 {
- position:relative;
-}
-#div-canvas2d {
- position:absolute;
- top:0;
- left:0;
- z-index:1;
-}
-#div-viewer3d {
- position:absolute;
- top:0;
- left:66%;
- z-index:2;
+body {
+  top:0px;
 }
 
 #parameters{
-	position: absolute;
-	top: 0px;
-	left: 20px;
+  float:left;
   color: #2244FF;
-  z-index:1;
+}
+
+#div-canvas2d {
+  float:left;
+  width: 38%;
+  min-width: 100px;
+  border: 2px solid #a1a1a1;
+  padding: 10px 10px 10px; 
+  border-radius: 14px;
+  margin-left:10px;
+}
+#div-viewer3d {
+  float:left;
+  min-width: 100px;
+  border: 2px solid #a1a1a1;
+  padding: 10px 10px 10px; 
+  border-radius: 14px;
+  margin-left:10px;
 }
 
 input[type="input"]{
@@ -45,9 +48,7 @@ h2 {
   font-family: Tahoma, sans-serif;
   line-height: 1em;
   font-size: 62px;
-  text-shadow: -5px 5px 0px #00e6e6,
-               -10px 10px 0px #01cccc,
-               -15px 15px 0px #00bdbd;
+  text-shadow: -5px 5px 0px #00e6e6;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -60,9 +61,6 @@ h2 {
 #title_h2 {
   font-size:95px;
   color: rgba(255,10,10, 0.5);
-  text-shadow: -5px 5px 0px #FFe6e6,
-             -10px 10px 0px #FFcccc,
-             -15px 15px 0px #FFbdbd;
 }
 
 h2:active {
@@ -72,19 +70,7 @@ line-height: 1em;
 text-shadow: -15px 15px 0px #ff7777;
 }
 
-div.vertical-line{
-  position:absolute;
-  top:14%;
-  left:65%;
-  width: 8px; /* Line width */
-  background-color: #AAFFFF; /* Line color */
-  height: 60%; /* Override in-line if you want specific height. */
-  float: right; /* Causes the line to float to left of content. 
-    You can instead use position:absolute or display:inline-block
-    if this fits better with your design */
-  z-index: 4;
-  box-shadow: -5px 5px 0px #00e6e6,
-             -10px 10px 0px #01cccc,
-             -15px 15px 0px #00bdbd;
-  /* height: 600px; */
+label.parameters_titles{
+  padding: 10px;
+  text-size: 1000%;
 }
