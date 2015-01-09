@@ -2,7 +2,8 @@
 window.globals = {
     array_line_2d: [],
     open_line: true,  
-    call_array_2d_to_3d: function() { array_2d_to_3d(); }
+    call_array_2d_to_3d: function() { array_2d_to_3d(); },
+    draw_line: function() { draw_line(); }
 };
 // Object that holds all the user configuration parameters
 var parameters = {
@@ -36,15 +37,46 @@ function eventChangeHandler(e) {
 	if (e.target !== e.currentTarget) {
 		var item = e.target.id;
     parameters.update();
-    array_2d_to_3d();  
+    draw_line();  
 	}
     e.stopPropagation();
 } 
 
 // 3Dimension array[layer][node][coordinates]
 // Todo: Add extruder dimension
-var array_line_3d = [];
+var array_line_3d = [], array_draw_line_3d = [];
+
 parameters.update();
+
+// This transforms the 2d shape into an ordered array used by the 3d-viewer
+function draw_line() {
+  console.log("draw_line");
+    array_draw_line_3d = [];
+  var x, y, z;
+  // Loop for the total amount of layers
+  for (var layer_index = 0; layer_index < parameters.num_of_layers; layer_index++) {
+    array_draw_line_3d[layer_index] = [];  // Adding layer info
+    // console.log("LOGIC: start = " + start + ", direction = " + direction + ", inc = " + inc);
+    for (var point_index = 0; point_index < globals.array_line_2d.length; point_index ++) {
+      // Scale model to delta_x parameter and round to 3 decimals
+      x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.delta_x/100)/1000;
+      y = Math.round(1000 * globals.array_line_2d[point_index][1] * parameters.delta_x/100)/1000;
+      z = parameters.first_height + layer_index * parameters.layer_height;
+      z = Math.round(1000 * z) / 1000;
+      // Scale model based on top layer scale %
+      x = x * scale_layer(layer_index);
+      y = y * scale_layer(layer_index);
+      // Rotate layers based on rotation parameters deg/layers
+      var rotated_coordinates = rotate_point(x, y, layer_index);
+      x = rotated_coordinates[0];
+      y = rotated_coordinates[1];
+      array_draw_line_3d[layer_index].push([x, y, z]); // Adding coordinates info
+    }
+  }
+
+  // console.log(array_draw_line_3d);
+  draw_shape_into_3dviewer();
+}
 
 // From 2d array to 3d array for 3d Viewer and Gcode generation
 function array_2d_to_3d() {

@@ -13,6 +13,8 @@ var height=600;
 var Camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
 var group; //create an empty container for all the figure lin3s
 
+var lin3;
+
 init_3dviewer();
 animation();
 
@@ -32,87 +34,73 @@ function draw_shape_into_3dviewer() {
 }
 
 function addLights() {
-    var dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.position.set(100, -100, 10);
+    var dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    dirLight.position.set(-200, -200, 100);
     scene.add(dirLight);
-    var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(0, 1, 0);
-    scene.add( directionalLight );
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight.position.set(200, 200, 100);
+    scene.add( directionalLight);
     var ambientLight = new THREE.AmbientLight(0x404040); // soft white light
     scene.add(ambientLight);
 }
 
 function remove_previous_shape() {
-
-	var obj, i;
-	for (i = group.children.length - 1; i >= 0 ; i--) {
-		obj = group.children[i];
-    group.remove(obj);
-	}
+  scene.remove(lin3);
 }
 
 function add_new_shape() {
+
+  if(array_draw_line_3d[0].length < 2){
+    return;
+  }
 	// http://threejs.org/docs/#Reference/Objects/Line
   // Why lines doesnt react to light
   // http://stackoverflow.com/questions/16308730/three-js-lines-with-different-materials-and-directional-light-intensity
-  var material = new THREE.MeshLambertMaterial({color: 0x55ff55});
+  var material = new THREE.MeshLambertMaterial({color: 0x00ff00,
+                                                side:THREE.DoubleSide
+                                               });
+  var geometry = new THREE.Geometry();
   
-  for(var i = 0; i < array_line_3d.length; i++) {
-    for(var j = 0; j < array_line_3d[i].length - 1; j++) {
-      // Calculate position for each line (cylinder)
-      var current_point = array_line_3d[i][j];
-      var target_point = array_line_3d[i][j+1];
-      var delta_x = target_point[0] - current_point[0];
-      var delta_y = target_point[1] - current_point[1];
-      var delta_z = target_point[2] - current_point[2];
-      var delta_xy = Math.sqrt(Math.pow(delta_x,2) + Math.pow(delta_y,2));
-      var distance = Math.sqrt(Math.pow(delta_x,2) + Math.pow(delta_y,2) + Math.pow(delta_z,2));
-      var z_rotation = Math.atan2(delta_z, delta_xy);
-      //console.log("target_z = " + target_point[2] + ", current_z = " + current_point[2] + 
-      //", delta_z = " + delta_z + ", delta_xy = " + delta_xy + ", z rotation = " + z_rotation);
-      var rotation = Math.atan2(delta_y, delta_x);
-      // Build cylinder geometry for each line
-      var geometry = new THREE.CylinderGeometry(parameters.extrusion_radius, parameters.extrusion_radius, distance, cylinder_faces);
-      var lin3 = new THREE.Mesh(geometry, material);
-      // Positioned and rotated to place properly each line
-      lin3.rotation.set(0, -z_rotation, -Math.PI/2 + rotation);
-      lin3.position.set(current_point[0] + (delta_xy/2) * Math.cos(rotation),
-                        current_point[1] + (delta_xy/2) * Math.sin(rotation),
-                        current_point[2] + (distance/2) * Math.sin(z_rotation));
-      group.add(lin3);
-      if (show_spheres) {
-        // Adding a sphere joint for each corner
-        var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, sphere_faces, sphere_faces);
-        var sphere = new THREE.Mesh(geometry, material);
-        sphere.position.set(current_point[0], current_point[1], current_point[2]);
-        group.add(sphere);
-      }
-    }
-    if(show_spheres) {
-      // This sphere is added at the end of the layer line
-      var geometry = new THREE.SphereGeometry(parameters.extrusion_radius, sphere_faces, sphere_faces);
-      var sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(target_point[0], target_point[1], target_point[2]);
-      group.add(sphere);
+  // Adding vertices to the geometry
+  for(var i = 0; i < array_draw_line_3d.length; i++) {
+    for(var j = 0; j < array_draw_line_3d[i].length; j++) {
+      geometry.vertices.push(new THREE.Vector3(array_draw_line_3d[i][j][0],  array_draw_line_3d[i][j][1], array_draw_line_3d[i][j][2])); 
     }
   }
-	scene.add(group);
-}
+  
+  // Adding faces to the geometry
+  var layer_num_of_points = array_draw_line_3d[0].length;
+  console.log("layer_num_of_points = " + layer_num_of_points);
+  var num_of_faces = (layer_num_of_points - 1) * (array_draw_line_3d.length-1);
+  console.log("num_of_faces = " + num_of_faces);
 
-function add_new_shape_with_lines() {
-// geometry
-var geometry = new THREE.Geometry();
-geometry.vertices.push( new THREE.Vector3( 0, 5, 0 ) );
-geometry.vertices.push( new THREE.Vector3( 5, -5, -2 ) );
-geometry.vertices.push( new THREE.Vector3( -5, -5, 2 ) );
-geometry.vertices.push( new THREE.Vector3( 0, 5, 0 ) ); // close the loop
-
-// material
-var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
-
-// line
-var line = new THREE.Line( geometry, material );
-scene.add( line );
+  // Lucky faces generation, only god knows why it works, si l'encerto l'endevino
+  for(var i = 1; i < array_draw_line_3d.length; i++) {
+    for(var j = 0; j < (array_draw_line_3d[i].length - 1); j++) {
+      geometry.faces.push(new THREE.Face3(j, 
+                                          j + 1 ,
+                                          j + layer_num_of_points * i));
+      geometry.faces.push(new THREE.Face3(j + 1,
+                                          j + 1 + layer_num_of_points * i,
+                                          j + layer_num_of_points * i)); 
+    }
+  }
+  var jump = 0;
+  for(var i = 0; i < num_of_faces; i++) {
+    if(i==layer_num_of_points)
+      jump++;
+    // geometry.faces.push(new THREE.Face3(i + jump, i + 1 + jump, i + jump + layer_num_of_points));
+    // geometry.faces.push(new THREE.Face3(i + 1 + jump, i + 1 + layer_num_of_points + jump, i + layer_num_of_points + jump)); 
+  }
+  // This does the trick to have lighting effect in the material from
+  // http://stackoverflow.com/questions/21761704/three-js-draw-custom-mesh-with-meshlambertmaterial-and-point-light
+  geometry.computeFaceNormals();
+  geometry.computeVertexNormals();
+  
+  console.log("geometry size = " + geometry.vertices.length);
+  lin3 = new THREE.Mesh(geometry, material);
+  // Positioned and rotated to place properly each line
+	scene.add(lin3);
 }
 
 function animation() {
@@ -122,7 +110,8 @@ function animation() {
 
 function render_model() {
 	controls.update();
-	//group.rotation.z += 0.001;
+  if(lin3)
+    lin3.rotation.z += 0.001;
 	Render.render(scene, Camera);
 }
 

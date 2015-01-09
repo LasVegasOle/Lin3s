@@ -21,7 +21,6 @@ var path_to_3d;
 var types = ['point', 'handleIn', 'handleOut'];
 var mode; // move, close or add
 var type; // type of segment point handleIn handleOut
-
 var currentSegment;
 
 function findHandle(point) {
@@ -34,10 +33,10 @@ function findHandle(point) {
       var segmentPoint = type == 'point'
           ? segment.point
           : segment.point + segment[type];
-      console.log(segmentPoint);
+      // console.log(segmentPoint);
       var distance = (point - segmentPoint).length;
-      console.log(distance);
-      if (distance < 3) {
+      // console.log(distance);
+      if (distance < 5) {
         return {
           type: type,
           segment: segment
@@ -85,7 +84,7 @@ function onMouseDown(event) {
   
   // Si existe el segmento lo movemos, sino creamos uno
   mode = currentSegment ? 'move' : 'add';
-  if (!currentSegment)
+  if (!currentSegment && path.closed == false)
     currentSegment = path.add(event.point); // add new point to the path
   currentSegment.selected = true;
 }
@@ -97,10 +96,15 @@ function onMouseDrag(event) {
       currentSegment.point = event.point;
     } else {
       var delta = event.delta.clone();
-      if (type == 'handleOut' || mode == 'add')
+      if (mode == 'add' || type == 'point') {
         delta = -delta;
-      currentSegment.handleIn += delta;
-      currentSegment.handleOut -= delta;
+        currentSegment.handleIn += delta;
+        currentSegment.handleOut -= delta;
+      } else if (type == 'handleOut') {
+        currentSegment.handleOut += delta;
+      } else if (type == 'handleIn') {
+        currentSegment.handleIn += delta;
+      }
     }
 }
 
@@ -129,7 +133,7 @@ function update_3d_array() {
     path_to_3d.flatten(10);
     path_to_3d.visible = false;
     build_line_array();
-    globals.call_array_2d_to_3d();
+    globals.draw_line();
 }
 
 // @brief builds up de line array
