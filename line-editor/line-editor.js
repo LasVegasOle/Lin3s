@@ -129,9 +129,14 @@ function onMouseUp(event) {
 
 // @brief This updates the path used on logic.js to convert the 2d shape into 3d 
 function update_3d_array() {
+    // Copy the path into a the path that would be chopped into segments
     path_to_3d = path.clone();
-    path_to_3d.flatten(10);
+    // Chop the path into segments of 1px
+    path_to_3d.flatten(5);
+    // Hide the segmented path so doesnt overlap with the nice bezier original path
     path_to_3d.visible = false;
+    // Delete unnecessary points from the path
+    delete_flat_points();
     build_line_array();
     globals.draw_line();
 }
@@ -191,4 +196,39 @@ function build_line_array(){
     y = - y;  // Inverting y axis due to coordinates orientation for paperjs and three js are different
 		globals.array_line_2d.push([x, y]);
 	}
+}
+
+// This delete unnecessary points created due to we chop the path into segments of 1px.
+// To do this we calculate the angle between previous and next point, and if its smaller than 
+// a threshold we delete it.
+function delete_flat_points() {
+	// Loop all the path to three 3d length skipping first point and last point
+  path_to_3d_segments = path_to_3d.segments;
+  //console.log("path_to_3d_segments = " + path_to_3d_segments + ", path_to_3d_segments.length = " + path_to_3d_segments.length);
+  //console.log("Path_to_3d_segments.length = " + path_to_3d_segments.length);
+  for (i = 1; i < (path_to_3d_segments.length - 1); i ++) {
+    //console.log("i = " + i);
+    var previous = path_to_3d_segments[i-1];
+    var current = path_to_3d_segments[i];
+    var next = path_to_3d_segments[i+1];
+    // console.log("prev_point = " + previous.point + ", current_point = " + current.point + ", next_point = " + next.point);
+    var previous_to_current_delta_x = Math.abs(current.point.x - previous.point.x);
+    var previous_to_current_delta_y = Math.abs(current.point.y - previous.point.y);
+    var current_to_next_delta_x = Math.abs(next.point.x - current.point.x);
+    var current_to_next_delta_y = Math.abs(next.point.y - current.point.y);
+    var previous_to_current_angle = Math.atan(previous_to_current_delta_y/previous_to_current_delta_x)*180/Math.PI;
+    var current_to_next_angle = Math.atan(current_to_next_delta_y/current_to_next_delta_x)*180/Math.PI;
+    // Rounding decimals to 3 digits
+    previous_to_current_angle = Math.round(1000*previous_to_current_angle)/1000;
+    current_to_next_angle = Math.round(1000*current_to_next_angle)/1000;
+    // console.log("prev angle = " + previous_to_current_angle 
+    //           + ", next angle = " + current_to_next_angle);
+    // if both angles are equal means the three points are aligned into a straight line, so delete middle point (current)
+    if (previous_to_current_angle == current_to_next_angle) {
+      path_to_3d_segments[i].remove();
+      i--; // decrease counter if a segment has been removed due to array segment shifting
+    }
+  }
+  //console.log("path_to_3d_segments = " + path_to_3d_segments + ", path_to_3d_segments.length = " + path_to_3d_segments.length);
+  //console.log("Path_to_3d_segments.length = " + path_to_3d_segments.length);
 }

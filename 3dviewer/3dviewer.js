@@ -21,7 +21,7 @@ animation();
 function init_3dviewer() {
 	Render.setSize(width, height);
 	document.getElementById('div-viewer3d').appendChild(Render.domElement);
-	Camera.position.set(  0,-100,100);
+	Camera.position.set(0,-100,100);
 	scene.add(Camera);
   addLights();
   group = new THREE.Object3D();//create an empty container
@@ -60,19 +60,17 @@ function add_new_shape() {
                                                 side:THREE.DoubleSide
                                                });
   var geometry = new THREE.Geometry();
-  
   // Adding vertices to the geometry
   for(var i = 0; i < array_draw_line_3d.length; i++) {
     for(var j = 0; j < array_draw_line_3d[i].length; j++) {
       geometry.vertices.push(new THREE.Vector3(array_draw_line_3d[i][j][0],  array_draw_line_3d[i][j][1], array_draw_line_3d[i][j][2])); 
     }
   }
-  
   // Adding faces to the geometry
   var layer_num_of_points = array_draw_line_3d[0].length;
-  console.log("layer_num_of_points = " + layer_num_of_points);
+  // console.log("layer_num_of_points = " + layer_num_of_points);
   var num_of_faces = (layer_num_of_points - 1) * (array_draw_line_3d.length-1);
-  console.log("num_of_faces = " + num_of_faces);
+  // console.log("num_of_faces = " + num_of_faces);
 
   // Lucky faces generation, only god knows why it works, si l'encerto l'endevino
   for(var i = 1; i < array_draw_line_3d.length; i++) {
@@ -95,9 +93,8 @@ function add_new_shape() {
   // This does the trick to have lighting effect in the material from
   // http://stackoverflow.com/questions/21761704/three-js-draw-custom-mesh-with-meshlambertmaterial-and-point-light
   geometry.computeFaceNormals();
-  geometry.computeVertexNormals();
-  
-  console.log("geometry size = " + geometry.vertices.length);
+  geometry.computeVertexNormals(); 
+  // console.log("geometry size = " + geometry.vertices.length);
   lin3 = new THREE.Mesh(geometry, material);
   // Positioned and rotated to place properly each line
 	scene.add(lin3);

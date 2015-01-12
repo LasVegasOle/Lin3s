@@ -8,25 +8,46 @@ window.globals = {
 // Object that holds all the user configuration parameters
 var parameters = {
   layer_height: 0,
+  width_x: 0,
+  length_y: 0,
+  height_z: 0,
   num_of_layers: 0,
   first_height: 0,
   delta_x: 0,
+  total_rotation: 0,
   layer_rotation: 0,
   top_layer_scale: 0,
   extrusion_radius: 0,  // This parameters is for ThreeJS Cyilinders radius
   center_x: 0,
   center_y: 0,
   continuous_path: true,
+  material_diameter: 0,
+  nozzle_diameter: 0,
+  nozzle_material_surfaces_ratio: 0,
+  feedrate: 0,
+  delay: 0,
   'update': function() {
+    this.width_x = parseFloat(document.getElementById("width_x").value);
+    //this.length_y = parseFloat(document.getElementById("length_y").value);
+    this.height_z = parseFloat(document.getElementById("height_z").value);
     this.layer_height = parseFloat(document.getElementById("layer_height").value);
-    this.num_of_layers = parseFloat(document.getElementById("num_of_layers").value);
+    this.num_of_layers = this.height_z/this.layer_height;
     this.first_height = parseFloat(document.getElementById("first_height").value);
-    this.delta_x = parseFloat(document.getElementById("delta_x").value);
-    this.layer_rotation = parseFloat(document.getElementById("layer_rotation").value);
+    this.total_rotation = parseFloat(document.getElementById("layer_rotation").value);
+    this.layer_rotation = parseFloat(this.total_rotation/this.num_of_layers);
     this.top_layer_scale = parseFloat(document.getElementById("top_layer_scale").value);
     this.extrusion_radius = this.layer_height/2;
     this.center_x = parseFloat(document.getElementById("center_x").value);
     this.center_y = parseFloat(document.getElementById("center_y").value);
+    this.feedrate = 60 * parseFloat(document.getElementById("feedrate").value); // from mm/s to mm/min
+    this.delay = parseFloat(document.getElementById("delay").value);
+    this.material_diameter = parseFloat(document.getElementById("material_diameter").value);
+    this.nozzle_diameter = parseFloat(document.getElementById("nozzle_diameter").value);
+    var nozzle_surface = Math.PI * Math.pow((this.nozzle_diameter/2),2);
+    var material_surface = Math.PI * Math.pow((this.material_diameter/2),2);
+    //console.log("Nozzle surface = " + nozzle_surface + ", Material Surface = " + material_surface);
+    this.nozzle_material_surfaces_ratio = nozzle_surface / material_surface;
+    //console.log("nozzle material surface ratio = " + this.nozzle_material_surfaces_ratio);
   }
 }
 
@@ -42,6 +63,8 @@ function eventChangeHandler(e) {
     e.stopPropagation();
 } 
 
+//document.getElementById('width')
+
 // 3Dimension array[layer][node][coordinates]
 // Todo: Add extruder dimension
 var array_line_3d = [], array_draw_line_3d = [];
@@ -50,7 +73,7 @@ parameters.update();
 
 // This transforms the 2d shape into an ordered array used by the 3d-viewer
 function draw_line() {
-  console.log("draw_line");
+  //console.log("draw_line");
     array_draw_line_3d = [];
   var x, y, z;
   // Loop for the total amount of layers
@@ -59,8 +82,8 @@ function draw_line() {
     // console.log("LOGIC: start = " + start + ", direction = " + direction + ", inc = " + inc);
     for (var point_index = 0; point_index < globals.array_line_2d.length; point_index ++) {
       // Scale model to delta_x parameter and round to 3 decimals
-      x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.delta_x/100)/1000;
-      y = Math.round(1000 * globals.array_line_2d[point_index][1] * parameters.delta_x/100)/1000;
+      x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.width_x/100)/1000;
+      y = Math.round(1000 * globals.array_line_2d[point_index][1] * parameters.width_x/100)/1000;
       z = parameters.first_height + layer_index * parameters.layer_height;
       z = Math.round(1000 * z) / 1000;
       // Scale model based on top layer scale %
@@ -73,7 +96,6 @@ function draw_line() {
       array_draw_line_3d[layer_index].push([x, y, z]); // Adding coordinates info
     }
   }
-
   // console.log(array_draw_line_3d);
   draw_shape_into_3dviewer();
 }
@@ -106,8 +128,8 @@ function array_2d_to_3d() {
     // console.log("LOGIC: start = " + start + ", direction = " + direction + ", inc = " + inc);
     for (point_index=start; loop_cond(); point_index += inc) {
       // Scale model to delta_x parameter and round to 3 decimals
-      x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.delta_x/100)/1000;
-      y = Math.round(1000 * globals.array_line_2d[point_index][1] * parameters.delta_x/100)/1000;
+      x = Math.round(1000 * globals.array_line_2d[point_index][0] * parameters.width_x/100)/1000;
+      y = Math.round(1000 * globals.array_line_2d[point_index][1] * parameters.width_x/100)/1000;
       z = parameters.first_height + layer_index * parameters.layer_height;
       z = Math.round(1000 * z) / 1000;
       // Scale model based on top layer scale %
@@ -131,6 +153,7 @@ function array_2d_to_3d() {
   if (parameters.continuous_path && !globals.open_line) {
     continuous_path_calculation();
   }
+  add_extrusion_values();
   // console.log(array_line_3d);
   draw_shape_into_3dviewer();
   // Center array after drawing to avoid messing drawing location
@@ -183,7 +206,6 @@ function center_array_line_3d() {
 
 // @brief Increases height point by point instead of layer by layer
 function continuous_path_calculation() {
-  
   for(var layers_index = 0; layers_index < array_line_3d.length; layers_index++) {
     // Measure whole layer size
     var layer_length = 0;
@@ -220,8 +242,56 @@ function continuous_path_calculation() {
       }
       //console.log("partial_point_layer_length = " + partial_point_layer_length + 
       //            ", layer_length = " + layer_length + ", parameters.layer_height = " + parameters.layer_height);
-      array_line_3d[layers_index][points_index+1][2] = continuous_z;
+      array_line_3d[layers_index][points_index+1][2] = Math.round(1000 *continuous_z)/1000;
       //console.log("layer length = " + layer_length + ", continuous_z = " + continuous_z);
     }
   }
 }
+
+// This calculates the extrusion value for each trajectory
+function add_extrusion_values() {
+    // if(globals.open_line)
+  var e = 0;
+  var point_index = 0;
+  
+  for(var layer_index = 0; layer_index < array_line_3d.length; layer_index++ ) {
+    // This feels first point of each layer with the last e value
+    point_index = 0;
+    // This is for closed paths, to have a first layer point with extrusion
+    if (!globals.open_line && layer_index != 0) {
+      var current_point = array_line_3d[layer_index-1][array_line_3d[layer_index].length - 1];
+      var target_point = array_line_3d[layer_index][0];
+      var delta_x = target_point[0] - current_point[0];
+      var delta_y = target_point[1] - current_point[1];
+      var delta_z = target_point[2] - current_point[2];
+      var distance = Math.sqrt(Math.pow(delta_x,2) + Math.pow(delta_y,2) + Math.pow(delta_z,2));
+      e += distance * parameters.nozzle_material_surfaces_ratio;     
+      array_line_3d[layer_index][point_index][3] = Math.round(10000 * e) / 10000;  
+    } else {
+      array_line_3d[layer_index][point_index][3] = e;
+    }
+    for(point_index = 0; point_index < (array_line_3d[layer_index].length - 1); point_index++) {
+      var current_point = array_line_3d[layer_index][point_index];
+      var target_point = array_line_3d[layer_index][point_index+1];
+      var delta_x = target_point[0] - current_point[0];
+      var delta_y = target_point[1] - current_point[1];
+      var delta_z = target_point[2] - current_point[2];
+      var distance = Math.sqrt(Math.pow(delta_x,2) + Math.pow(delta_y,2) + Math.pow(delta_z,2));
+      // console.log("delta x = " + delta_x + ", delta_y = "  + delta_y + " ,delta z = " + delta_z);  
+      // Extruder displacement = distance * Sn / Sm
+      e += distance * parameters.nozzle_material_surfaces_ratio;     
+      //console.log("Distance = " + distance + ", extrusion = " + e);
+      e = array_line_3d[layer_index][point_index+1][3] = Math.round(10000 * e) / 10000;
+    }
+  }
+  //array_line_3d[][][]
+}
+ 
+// Basic fluidic continuity equation to calculate the amount of material to extrude
+// Used nozzle diameter and material nozzle
+// Xm = Material or filament; Xn = nozzle
+// Sm * Vm = Sn * Vn
+// Vn = Feedrate
+// Sn = pi * (nozzle_diameter/2)^2
+// Sm = pi * (nozzle_material/2)^2  
+// Vm = Sm * Vn / Sn

@@ -15,31 +15,26 @@
         <label class="field" class="parameters_titles">Design</label>
       </p>
       <p>
-        <label class="field" for="width_x">Width [<em>mm</em>]:</label>
-        <input id="width_x" type ="input" value="60"/>
+        <label class="field" for="width_x">Width (x) [<em>mm</em>]:</label>
+        <input id="width_x" type ="input" value="50"/>
+      </p>  
+      <!--<p>
+        <label class="field" for="length_y">Length (y) [<em>mm</em>]:</label>
+        <input id="length_y" type ="input" value="50"/>
+      </p>-->  
+      <p>
+        <label class="field" for="height_z">Height (z) [<em>mm</em>]:</label>
+        <input id="height_z" type ="input" value="10"/>
       </p>  
       <p>
-        <label class="field" for="length_y">Length [<em>mm</em>]:</label>
-        <input id="length_y" type ="input" value="60"/>
-      </p>  
-      <p>
-        <label class="field" for="height_z">Height [<em>mm</em>]:</label>
-        <input id="height_z" type ="input" value="60"/>
-      </p>  
-      <p>
-        <label class="field" for="delta_x">Delta X [<em>mm</em>]:</label>
-        <input id="delta_x" type ="input" value="60"/>
-      </p>  
-      <p>
-        <label class="field" for="num_of_layers"># layers:</label>
-        <input id="num_of_layers" type ="input" value="2"/>
+        <label class="field" class="parameters_titles">Effects</label>
       </p>
       <p>
-        <label class="field" for="layer_rotation">Rotation [<em>deg/layer</em>]:</label>
+        <label class="field" for="layer_rotation">Rotation [<em>degrees</em>]:</label>
         <input id="layer_rotation" type ="input" value="0"/>
       </p>
       <p>
-        <label class="field" for="top_layer_scale">Scale top layer [<em>%</em>]:</label>
+        <label class="field" for="top_layer_scale">Scale [<em>%</em>]:</label>
         <input id="top_layer_scale" type ="input" value="100"/>
       </p>
       <!-- Printing parameters -->
@@ -48,28 +43,36 @@
       </p>
       <p>
         <label class="field" for="layer_height">Layer height [<em>mm</em>]:</label>
-        <input id="layer_height" type ="input" value="1.1"/>
+        <input id="layer_height" type ="input" value="0.5"/>
       </p>
       <p>
         <label class="field" for="first_height">1st layer height [<em>mm</em>]:</label>
-        <input id="first_height" type ="input" value="0.5"/>
+        <input id="first_height" type ="input" value="0"/>
       </p>  
       <p>
-        <label class="field" for="feedrate">Feedrate [<em>mm/min</em>]:</label>
-        <input id="feedrate" type ="input" value="1500"/>
+        <label class="field" for="feedrate">Feedrate [<em>mm/s</em>]:</label>
+        <input id="feedrate" type ="input" value="30"/>
       </p>
       <p>
         <label class="field" for="delay">Initial delay [<em>ms</em>]:</label>
-        <input id="delay" type ="input" value="300"/>
+        <input id="delay" type ="input" value="0"/>
       </p>
       <p>
         <label class="field" for="center_x">center x [<em>mm</em>]:</label>
-        <input id="center_x" type ="input" value="0"/>
+        <input id="center_x" type ="input" value="80"/>
       </p>
       <p>
         <label class="field" for="center_y">center y [<em>mm</em>]:</label>
-        <input id="center_y" type ="input" value="0"/>
+        <input id="center_y" type ="input" value="80"/>
       </p>
+      <p>
+        <label class="field" for="nozzle_diameter">Nozzle diameter [<em>mm</em>]:</label>
+        <input id="nozzle_diameter" type ="input" value="0.5"/>
+      </p>
+      <p>
+        <label class="field" for="material_diameter">Material diameter[<em>mm</em>]:</label>
+        <input id="material_diameter" type ="input" value="3"/>
+      </p>  
       <p>
         <label class="field" for="name">File name:</label>
         <input id="name" type ="input" value="Lin3s"/>
