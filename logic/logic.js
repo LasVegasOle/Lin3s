@@ -1,7 +1,10 @@
 // Global variables shared with paperscript
 window.globals = {
     array_line_2d: [],
-    open_line: true,  
+    open_line: true, 
+    epsilon: 5,  // Curve degreess 5 fine
+    flatten_size: 2.5,
+    debug: false, // not saving file
     call_array_2d_to_3d: function() { array_2d_to_3d(); },
     draw_line: function() { draw_line(); }
 };

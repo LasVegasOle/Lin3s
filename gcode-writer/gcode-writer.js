@@ -20,10 +20,12 @@ function write_gcode() {
   var output = write_parameters();
   // Add GCode instruction
 	output += write_gcode_instructions();
-  console.log(output);
+  // console.log(output);
   // Create and save GCode file using FileSaver.js library
-	var gcode_file = new Blob([output], {type: 'text/plain'});
-	saveAs(gcode_file, document.getElementById("name").value + '.gcode');
+  if(!globals.debug) {
+    var gcode_file = new Blob([output], {type: 'text/plain'});
+    saveAs(gcode_file, document.getElementById("name").value + '.gcode');
+  }
 }
 
 // Creates and returns header info text holding the value of the different 
@@ -44,23 +46,23 @@ function write_gcode_instructions() {
   safe_z_height = array_line_3d[0][0][2] + 2;
   gcode_instructions += "G1 Z" + safe_z_height
                         + " F" + parameters.feedrate + "\n";  
-  
+
   // Move head to first print position
   gcode_instructions += "G1 X" + array_line_3d[0][0][0]
                         + " Y" + array_line_3d[0][0][1] + "\n";
-  
+
   // Lower head position
   gcode_instructions += "G1 Z" + array_line_3d[0][0][2] + "\n";
-  
+
   // Reset Extruder position
   gcode_instructions += "G92 E0 \n";
-  
+
   // Turn on air compressed extruder
   gcode_instructions += "M126 \n";
-  
+
   // Add turn on delay
   gcode_instructions += "G4 P" + parameters.delay + "\n";
-  
+
   // Loop for the total amount of layers
   for (var i = 0; i < array_line_3d.length; i++) {
   // Loop over the line #number of nodes
@@ -73,12 +75,24 @@ function write_gcode_instructions() {
                              + "\n";
     }
   }
-  
+
   // Close air extrusion
   gcode_instructions += "M127 \n";
-  
+
   //homing
-  gcode_instructions += "G28 \n";
+  // gcode_instructions += "G28 \n";
+  // Short retraction
+  last_layer = array_line_3d.length - 1;
+  last_layer_point = array_line_3d[last_layer].length - 1;
+  // console.log("last_layer = " + last_layer + " ,last_layer_point = " + last_layer_point);
+  // console.log(array_line_3d[last_layer][last_layer_point][3]);
+  var end_retraction = array_line_3d[last_layer][last_layer_point][3] - 2;
+  gcode_instructions +=  "G1 E" + end_retraction + "\n";
+
+  // Moving head printer away from print
+  var end_lift = array_line_3d[last_layer][last_layer_point][2] + 10;
+  gcode_instructions +=  "G1 Z" + end_lift + "\n";
+
   return gcode_instructions;
 }
 

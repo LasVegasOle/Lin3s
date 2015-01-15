@@ -132,7 +132,7 @@ function update_3d_array() {
     // Copy the path into a the path that would be chopped into segments
     path_to_3d = path.clone();
     // Chop the path into segments of 1px
-    path_to_3d.flatten(5);
+    path_to_3d.flatten(globals.flatten_size);
     // Hide the segmented path so doesnt overlap with the nice bezier original path
     path_to_3d.visible = false;
     // Delete unnecessary points from the path
@@ -203,6 +203,7 @@ function build_line_array(){
 // a threshold we delete it.
 function delete_flat_points() {
 	// Loop all the path to three 3d length skipping first point and last point
+  var epsilon = globals.epsilon; // 5 degrees minimum curve angle
   path_to_3d_segments = path_to_3d.segments;
   //console.log("path_to_3d_segments = " + path_to_3d_segments + ", path_to_3d_segments.length = " + path_to_3d_segments.length);
   //console.log("Path_to_3d_segments.length = " + path_to_3d_segments.length);
@@ -224,7 +225,7 @@ function delete_flat_points() {
     // console.log("prev angle = " + previous_to_current_angle 
     //           + ", next angle = " + current_to_next_angle);
     // if both angles are equal means the three points are aligned into a straight line, so delete middle point (current)
-    if (previous_to_current_angle == current_to_next_angle) {
+    if ( Math.abs(previous_to_current_angle - current_to_next_angle) < epsilon) {
       path_to_3d_segments[i].remove();
       i--; // decrease counter if a segment has been removed due to array segment shifting
     }

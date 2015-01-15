@@ -47,7 +47,7 @@ h2 {
   color: rgba(160,255,255, 1);
   font-family: Tahoma, sans-serif;
   line-height: 1em;
-  font-size: 62px;
+  font-size: 58px;
   text-shadow: -5px 5px 0px #00e6e6;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -59,7 +59,7 @@ h2 {
   margin-bottom: 0;
 }
 #title_h2 {
-  font-size:95px;
+  font-size:75px;
   color: rgba(255,10,10, 0.5);
 }
 
